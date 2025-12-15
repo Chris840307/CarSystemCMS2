@@ -2,7 +2,7 @@
 $host = "117.56.148.80";
 $user = "root";
 $pass = "2u6u/ru8";
-$dbname = "CMS";
+$dbname = "CMS2";
 
 try {
     $pdo = new PDO(
