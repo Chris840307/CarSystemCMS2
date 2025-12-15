@@ -185,37 +185,36 @@
         })
 
         function login() {
-            window.location.href = "action_page.php";
-            // if (!$('#form_data').valid()) {
-            //     return;
-            // }
+            if (!$('#form_data').valid()) {
+                return;
+            }
 
-            // let postData = {
-            //     account: $("#username").val().trim(),
-            //     pwd: $("#pwd").val().trim()
-            // };
-            // $.ajax({
-            //     url: "api/login/login.php",
-            //     type: "POST",
-            //     dataType: 'json',
-            //     contentType: 'application/json',
-            //     data: JSON.stringify(postData),
-            //     success: function(res) {
-            //         if (res.returnCode == 200) {
-            //             // 存 cookie 7天
-            //             document.cookie = "user_id=" + res.data.user_id + "; path=/; max-age=" + (7 * 24 * 60 * 60);
-            //             document.cookie = "name=" + res.data.name + "; path=/; max-age=" + (7 * 24 * 60 * 60);
+            let postData = {
+                account: $("#username").val().trim(),
+                pwd: $("#pwd").val().trim()
+            };
+            $.ajax({
+                url: "api/login/login.php",
+                type: "POST",
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(postData),
+                success: function(res) {
+                    if (res.returnCode == 200) {
+                        // 存 cookie 7天
+                        document.cookie = "user_id=" + res.data.user_id + "; path=/; max-age=" + (7 * 24 * 60 * 60);
+                        document.cookie = "name=" + res.data.name + "; path=/; max-age=" + (7 * 24 * 60 * 60);
 
-            //             window.location.href = "action_page.php";
-            //         } else {
-            //             alert('登入失敗');
-            //         }
-            //     },
-            //     error: function(xhr) {
-            //         alert(xhr?.responseJSON?.message);
-            //         console.error("錯誤：", xhr?.responseJSON?.message || xhr.responseText);
-            //     }
-            // });
+                        window.location.href = "action_page.php";
+                    } else {
+                        alert('登入失敗');
+                    }
+                },
+                error: function(xhr) {
+                    alert(xhr?.responseJSON?.message);
+                    console.error("錯誤：", xhr?.responseJSON?.message || xhr.responseText);
+                }
+            });
         }
     </script>
 </body>

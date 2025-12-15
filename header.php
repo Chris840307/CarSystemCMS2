@@ -200,7 +200,7 @@
             } else {
                 $("#username").text("未登入");
                 // 若要未登入自動跳回登入頁 → 打開下面
-                // window.location.href = "index.php";
+                window.location.href = "index.php";
             }
         });
 
