@@ -80,7 +80,7 @@
                 <h3>案件管理</h3>
                 <a href="./case.php" class="link-btn">宏謙案件查詢</a>
                 <a href="./case_old.php" class="link-btn">舊案件查詢</a>
-                <a href="#" class="link-btn">查詢日誌</a>
+                <a href="./logs.php" class="link-btn">查詢日誌</a>
                 <a href="./acl_users.php" class="link-btn">權限管理</a>
             </div>
             <div class="card">
