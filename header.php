@@ -10,7 +10,7 @@
     <script src="js/bootstrap-5.3.0.bundle.min.js"></script>
     <script src="js/jquery.validate-1.20.0.min.js"></script>
     <script src="js/messages_zh-1.20.0.min.js"></script>
-    <script src="js/main.js?v20251209"></script>
+    <script src="js/main.js?v20251217"></script>
     <script src="js/common.js?v20251115"></script>
     <link rel="stylesheet" href="css/bootstrap-5.3.0.min.css" />
     <link rel="stylesheet" href="css/style.css?v20251208" />
@@ -200,7 +200,7 @@
             } else {
                 $("#username").text("未登入");
                 // 若要未登入自動跳回登入頁 → 打開下面
-                window.location.href = "index.php";
+                // window.location.href = "index.php";
             }
         });
 

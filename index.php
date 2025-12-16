@@ -205,7 +205,9 @@
                         document.cookie = "user_id=" + res.data.user_id + "; path=/; max-age=" + (7 * 24 * 60 * 60);
                         document.cookie = "name=" + res.data.name + "; path=/; max-age=" + (7 * 24 * 60 * 60);
 
-                        window.location.href = "action_page.php";
+                        setTimeout(() => {
+                            location.replace("action_page.php");
+                        }, 100);
                     } else {
                         alert('登入失敗');
                     }
