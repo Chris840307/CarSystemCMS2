@@ -6,7 +6,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>案件查詢系統</title>
 
-    <style></style>
+    <style>
+        #result_table tbody tr:hover td {
+            background-color: #dce8ff;
+        }
+    </style>
 </head>
 
 <body>
@@ -45,46 +49,64 @@
 
     <script>
         let currentData = []; // 保存查詢結果
+        let allPermissions = []; // 保存權限結果
 
         $(document).ready(function() {
-            fetchUserList();
-            fetchPermissionList();
+            Promise.all([
+                    fetchPermissionList(),
+                    fetchUserList()
+                ])
+                .then(() => {
+                    renderTable();
+                })
+                .catch(err => {
+                    console.error('載入資料失敗', err);
+                    alert('資料載入失敗');
+                });
         })
 
         // 取得帳號清單
         function fetchUserList() {
-            $.ajax({
-                url: 'api/acl_users/get_user_list.php',
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function(res) {
-                    if (res.returnCode == 200) {
-                        currentData = res.data;
-                        renderTable();
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: 'api/acl_users/get_user_list.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function(res) {
+                        if (res.returnCode == 200) {
+                            currentData = res.data;
+                            resolve(res.data);
+                        } else {
+                            reject(res);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("錯誤：", xhr.responseJSON.message);
                     }
-                },
-                error: function(xhr) {
-                    console.error("錯誤：", xhr.responseJSON.message);
-                }
+                });
             });
         };
         // 取得權限清單
         function fetchPermissionList() {
-            $.ajax({
-                url: 'api/acl_users/get_permission_list.php',
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function(res) {
-                    if (res.returnCode == 200) {
-                        currentData = res.data;
-                        renderTable();
+            return new Promise((resolve, reject) => {
+                $.ajax({
+                    url: 'api/acl_users/get_permission_list.php',
+                    type: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    success: function(res) {
+                        if (res.returnCode == 200) {
+                            allPermissions = res.data;
+                            resolve(res.data);
+                        } else {
+                            reject(res);
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error("錯誤：", xhr.responseJSON.message);
                     }
-                },
-                error: function(xhr) {
-                    console.error("錯誤：", xhr.responseJSON.message);
-                }
+                });
             });
         };
 
@@ -98,21 +120,17 @@
                 return;
             }
 
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageData = currentData.slice(start, end);
-
-            pageData.forEach(row => {
+            currentData.forEach(row => {
                 // 組權限 checkbox
                 let permissionHtml = '';
                 allPermissions.forEach(p => {
-                    const checked = row.permissions.includes(p.code) ? 'checked' : '';
+                    const checked = row.permissions.some(up => up.id === p.id) ? 'checked' : '';
 
                     permissionHtml += `
                         <label style="margin-right:12px; white-space:nowrap;">
                             <input type="checkbox"
                                 data-user-id="${row.id}"
-                                data-permission="${p.code}"
+                                data-permission-id="${p.id}"
                                 ${checked}
                                 onchange="togglePermission(this)">
                             ${p.name}
@@ -134,25 +152,28 @@
 
         // 更新權限
         function togglePermission(el) {
-            const payload = {
+            const postData = {
                 user_id: $(el).data('user-id'),
-                permission: $(el).data('permission'),
+                permission_id: $(el).data('permission-id'),
                 value: el.checked
             };
 
             $.ajax({
-                url: 'api/update_user_permission.php',
+                url: 'api/acl_users/update_user_permission.php',
                 method: 'POST',
                 contentType: 'application/json',
-                data: JSON.stringify(payload),
+                data: JSON.stringify(postData),
                 success(res) {
-                    if (!res.success) {
-                        alert('更新失敗');
+                    if (res.returnCode == 200) {
+                        showToast('更新成功', 'success');
+                    } else {
+                        showToast('更新失敗', 'error');
                         el.checked = !el.checked;
                     }
                 },
-                error() {
-                    alert('系統錯誤');
+                error: function(xhr) {
+                    showToast('更新失敗', 'error');
+                    console.error("錯誤：", xhr.responseJSON.message);
                     el.checked = !el.checked;
                 }
             });

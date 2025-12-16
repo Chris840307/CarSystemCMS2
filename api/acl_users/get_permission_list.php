@@ -5,7 +5,7 @@ require_once "../db.php";
 $method = $_SERVER["REQUEST_METHOD"];
 
 if ($method === "GET") {
-    $sql = "SELECT id, `status`, `name` FROM permissions ORDER BY `name`, id";
+    $sql = "SELECT id, `status`, `name` FROM permissions ORDER BY id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $permissions = $stmt->fetchAll(PDO::FETCH_ASSOC);
