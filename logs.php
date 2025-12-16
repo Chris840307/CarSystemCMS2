@@ -24,16 +24,18 @@
 
             <!-- 查詢條件 -->
             <div class="card p-4 mb-4">
-                <div class="row">
-                    <div class="col-md-3 col-sm-12 mb-2">
-                        <label class="mb-1">查詢日期：</label>
-                        <input type="date" class="form-control" name="query_date" id="query_date">
+                <form class="index-form" action="api/logs/export_log.php" accept-charset="UTF-8" method="post">
+                    <div class="row">
+                        <div class="col-md-3 col-sm-12 mb-2">
+                            <label class="mb-1">查詢日期：</label>
+                            <input type="date" class="form-control" name="query_date" id="query_date">
+                        </div>
                     </div>
-                </div>
 
-                <div class="d-flex justify-end mt-3">
-                    <button type="button" class="btn btn-primary w-100 w-md-auto" id="search_btn">匯出</button>
-                </div>
+                    <div class="d-flex justify-end mt-3">
+                        <button type="submit" class="btn btn-primary w-100 w-md-auto" id="search_btn">匯出</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -45,13 +47,6 @@
             const today = new Date().toISOString().split('T')[0];
             $('#query_date').val(today);
         })
-
-        // 查詢
-        $('#search_btn').click(function() {
-            const date = $('#query_date').val();
-            window.location.href =
-                'api/logs/export_log.php?query_date=' + encodeURIComponent(date);
-        });
     </script>
 </body>
 

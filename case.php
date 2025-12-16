@@ -94,6 +94,33 @@
         let currentPage = 1; // 目前頁碼
         const rowsPerPage = 20; // 每頁筆數
 
+        $(document).ready(function() {
+            insertLog();
+        })
+
+        // 寫入Log
+        function insertLog() {
+            let postData = {
+                "username": getCookie('name'),
+                "searchr": '案件查詢',
+                "detail": '宏謙案件查詢'
+            }
+
+            $.ajax({
+                url: 'api/logs/insert_log.php',
+                type: 'POST',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: JSON.stringify(postData),
+                success: function(res) {
+                    if (res.returnCode == 200) {}
+                },
+                error: function(xhr) {
+                    console.error("錯誤：", xhr.responseJSON.message);
+                }
+            });
+        };
+
         // 查詢
         $('#search_btn').click(function() {
             let postData = {

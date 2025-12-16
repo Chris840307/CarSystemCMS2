@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 require_once "../db.php";
 require '../../vendor/autoload.php';
 
@@ -7,30 +11,25 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-$queryDate = $_GET['query_date'] ?? date('Y-m-d');
+$queryDate = $_POST['query_date'] ?? date('Y-m-d');
 
 $sql = "SELECT *
         FROM search_log
-        WHERE DATE(cdate) = :query_date
+        WHERE DATE(create_time) = :query_date
         ORDER BY id ASC";
 $stmt = $pdo->prepare($sql);
-$stmt->execute([
-    ':query_date' => $queryDate
-]);
+$stmt->execute([':query_date' => $queryDate]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $data = [];
 foreach ($rows as $row) {
-    $detail = json_decode($row['detail'], true);
-    $search_target = isset($detail['searchr']) ? $detail['searchr'] : '未知';
-
     $data[] = [
         $row['id'],
         $row['username'],
         $row['ip'],
         $row['useragent'],
-        $row['cdate'],
-        $search_target,
+        $row['create_time'],
+        $row['detail'],
         $row['searchr'],
     ];
 }
@@ -41,7 +40,7 @@ $sheet = $spreadsheet->getActiveSheet();
 $sheet->mergeCells('A1:G1');
 $sheet->setCellValue('A1', '案件查詢系統');
 $sheet->getStyle('A1')->applyFromArray([
-    'font' => ['size' => 20],
+    'font' => ['size' => 20, 'bold' => true],
     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
 ]);
 
@@ -63,10 +62,9 @@ $startRow = 4;
 foreach ($data as $i => $row) {
     $rowIndex = $startRow + $i;
     $sheet->fromArray($row, NULL, 'A' . $rowIndex);
-    $sheet->getStyle('A' . ($startRow + $i))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
-    $sheet->getStyle('A' . ($startRow + $i) . ':G' . ($startRow + $i))->applyFromArray([
-        'alignment' => ['vertical' => Alignment::VERTICAL_CENTER, 'wrapText' => true],
-    ]);
+    $sheet->getStyle('A' . $rowIndex . ':G' . $rowIndex)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
+    $sheet->getStyle('A' . $rowIndex . ':G' . $rowIndex)->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+    $sheet->getStyle('A' . $rowIndex . ':G' . $rowIndex)->getAlignment()->setWrapText(true);
 }
 
 $colWidths = [5, 14, 15, 50, 20, 50, 15];
