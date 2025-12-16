@@ -7,9 +7,16 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-$sql = "SELECT * FROM `search_log` ORDER BY id ASC";
+$queryDate = $_GET['query_date'] ?? date('Y-m-d');
+
+$sql = "SELECT *
+        FROM search_log
+        WHERE DATE(cdate) = :query_date
+        ORDER BY id ASC";
 $stmt = $pdo->prepare($sql);
-$stmt->execute();
+$stmt->execute([
+    ':query_date' => $queryDate
+]);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $data = [];
